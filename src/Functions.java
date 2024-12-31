@@ -9,11 +9,17 @@ public class Functions {
     private Task[] tasks; // Store tasks in an array
     private int nTasks;
 
+    private Intern[] interns; //Store interns in an array
+    private int nInterns;
+
     public Functions() {
         this.tasks = null; // Initialize the list here
+        this.nTasks = 0;
+        this.interns = null;
+        this.nInterns = 0;
     }
 
-    //function to reed any file and storage the information into an array
+    //function to read any file and storage the information into an array
     public void scanText(String filePath) {
         try {
             File file = new File(filePath);
