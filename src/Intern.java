@@ -29,5 +29,9 @@ public class Intern {
         return junior;
     }
 
+    public String getInternDetails() {
+        return String.format("%s;%s;%.1f;%b", getName(), getSubject(), getAverage(), isJunior());
+    }
+
 
 }

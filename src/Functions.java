@@ -129,6 +129,8 @@ public class Functions {
         // Clear each element in the array
         Arrays.fill(tasks, null);
         tasks = new Task[0]; // Reset the array size to 0
+        Arrays.fill(interns, null);
+        interns = new Intern[0];
     }
 
     // Function to return the actual size of the tasks array
@@ -145,6 +147,14 @@ public class Functions {
         for (int i = 0; i < numTasks; i++) {
             if (taskArray!= null) {
                 System.out.println(taskArray[i].getTaskDetails());
+            }
+        }
+    }
+
+    public static void printInternArray(Intern[] internArray, int numIntern) {
+        for (int i = 0; i < numIntern; i++) {
+            if (internArray!= null) {
+                System.out.println(internArray[i].getInternDetails());
             }
         }
     }
@@ -209,16 +219,8 @@ public class Functions {
             System.out.println("Branch and Bound completed in " + totalDuration+ " ms");
         }
 
-//        // Ask if user wants to see the sorted tasks
-//        System.out.println("\nDo you want to see the shorted information? (y/n) ");
-//        Scanner scan = new Scanner(System.in);
-//        String answer = scan.nextLine();
-//        if (answer.equals("y")) {
-//            printTaskArray(tasks,numTasks);
-//        }
-//
-//        deleteData();
-//        System.out.println(getnTasks() + " in the array");
+        // Ask if user wants to see the sorted tasks
+        shortedInformation(numTasks);
     }
 
     public void equitableDistribution(){
@@ -270,15 +272,26 @@ public class Functions {
 
         }
 
-//        System.out.println("\nDo you want to see the shorted information? (y/n) ");
-//        Scanner scan = new Scanner(System.in);
-//        String answer = scan.nextLine();
-//        if (answer.equals("y")) {
-//            printTaskArray(tasks,numTasks);
-//        }
-//
+        shortedInformation(numTasks);
+
         deleteData();
 
+    }
+
+    private void shortedInformation(int numTasks) {
+        System.out.println("\nDo you want to see the shorted information? (y/n) ");
+        Scanner scan = new Scanner(System.in);
+        String answer = scan.nextLine();
+        if (answer.equals("y")) {
+            printTaskArray(tasks,numTasks);
+            System.out.println("\nINTERNS ARRAY: \n");
+            printInternArray(interns, nInterns);
+        }
+
+        deleteData();
+
+        System.out.println("\n" + getnTasks() + " in the tasks array");
+        System.out.println(getnInterns() + " in the interns array");
     }
 
 }

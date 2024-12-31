@@ -26,6 +26,7 @@ public class Menu {
     public int displayMenu() {
         int option;
 
+        System.out.println("\nPlease choose one of the following options:");
         System.out.println("\t1. Task Organization");
         System.out.println("\t2. Equitable distribution");
         System.out.println("\t3. Exit");

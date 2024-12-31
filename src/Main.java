@@ -4,8 +4,7 @@ public class Main {
         Functions functions = new Functions();
         Menu menu = new Menu();
 
-        System.out.println("\nWelcome to the Project 2\n");
-        System.out.println("Please choose one of the following options:");
+        System.out.println("\nWelcome to the Project 2");
 
         int option = menu.displayMenu();
 
