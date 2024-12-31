@@ -136,9 +136,9 @@ public class Functions {
         return tasks.length;
     }
 
-    // Function to return the tasks array
-    public Task[] getTasks() {
-        return tasks;
+    // Function to return the actual size of the interns array
+    public int getnInterns() {
+        return interns.length;
     }
 
     public static void printTaskArray(Task[] taskArray, int numTasks) {
@@ -170,6 +170,8 @@ public class Functions {
 
         int internsFile = menu.inputScanner(1, 3, "file");
         getInternsFile(internsFile);
+
+        System.out.println(getnInterns() + " in the array");
 
         System.out.println("\nSelect the algorithm to solve the problem: ");
         System.out.println("\t1. Task Organization by Greedy");
@@ -207,16 +209,16 @@ public class Functions {
             System.out.println("Branch and Bound completed in " + totalDuration+ " ms");
         }
 
-        // Ask if user wants to see the sorted tasks
-        System.out.println("\nDo you want to see the shorted information? (y/n) ");
-        Scanner scan = new Scanner(System.in);
-        String answer = scan.nextLine();
-        if (answer.equals("y")) {
-            printTaskArray(tasks,numTasks);
-        }
-
-        deleteData();
-        System.out.println(getnTasks() + " in the array");
+//        // Ask if user wants to see the sorted tasks
+//        System.out.println("\nDo you want to see the shorted information? (y/n) ");
+//        Scanner scan = new Scanner(System.in);
+//        String answer = scan.nextLine();
+//        if (answer.equals("y")) {
+//            printTaskArray(tasks,numTasks);
+//        }
+//
+//        deleteData();
+//        System.out.println(getnTasks() + " in the array");
     }
 
     public void equitableDistribution(){
@@ -268,13 +270,13 @@ public class Functions {
 
         }
 
-        System.out.println("\nDo you want to see the shorted information? (y/n) ");
-        Scanner scan = new Scanner(System.in);
-        String answer = scan.nextLine();
-        if (answer.equals("y")) {
-            printTaskArray(tasks,numTasks);
-        }
-
+//        System.out.println("\nDo you want to see the shorted information? (y/n) ");
+//        Scanner scan = new Scanner(System.in);
+//        String answer = scan.nextLine();
+//        if (answer.equals("y")) {
+//            printTaskArray(tasks,numTasks);
+//        }
+//
         deleteData();
 
     }
