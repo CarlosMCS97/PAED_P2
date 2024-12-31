@@ -29,6 +29,15 @@ public class Task {
     public String getImportance() { return importance; }
     public String getBuilding() { return building; }
 
+    public String getSubject() {
+        String[] parts = name.split(" per ");
+        if (parts.length > 1) {
+            return parts[1].split(" ")[0]; // Get the first word after "per"
+        }
+
+        return ""; //return empty if no subject is found
+    }
+
     public String getTaskDetails() {
         return String.format("%s;%s;%d;%d;%d;%s;%s",
                 getName(), getLimit(), getTime(), getDifficulty(), getProgress(), getImportance(), getBuilding());
