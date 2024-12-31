@@ -12,6 +12,7 @@ public class Intern {
         this.junior = junior;
     }
 
+
     public String getName() {
         return name;
     }
