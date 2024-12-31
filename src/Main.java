@@ -1,7 +1,7 @@
 public class Main {
 
     public static void main(String[] args) {
-        Algorithms algorithm = new Algorithms();
+        Functions functions = new Functions();
         Menu menu = new Menu();
 
         System.out.println("\nWelcome to the Project 2\n");
@@ -12,27 +12,14 @@ public class Main {
         do {
             switch (option) {
                 case 1:
-                    algorithm.greedyTO();
-                    System.out.println("\nSorted by name \n");
+                    functions.taskOrganization();
                     break;
 
                 case 2:
-                    algorithm.branchAndBound();
+                    functions.equitableDistribution();
                     break;
 
                 case 3:
-                    algorithm.greedyEQ();
-                    break;
-
-                case 4:
-                    algorithm.backtracking();
-                    break;
-
-                case 5:
-                    algorithm.bruteForce();
-                    break;
-
-                case 6:
                     System.out.println("See you next time!");
                     break;
 
@@ -41,7 +28,7 @@ public class Main {
             option = menu.displayMenu();
             System.out.println("Option: " + option);
 
-        } while (option != 6);
+        } while (option != 3);
 
 
 

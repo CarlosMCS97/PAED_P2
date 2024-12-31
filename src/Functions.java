@@ -13,9 +13,7 @@ public class Functions {
 
     public Functions() {
         this.tasks = null; // Initialize the list here
-        this.nTasks = 0;
         this.interns = null;
-        this.nInterns = 0;
     }
 
     //function to read any file and storage the information into an array
@@ -59,18 +57,40 @@ public class Functions {
         }
     }
 
-    //function to set the list with the selected file by the user
-    public void getFile(int option) {
-        switch (option) {
-            case 1:
-                readTasksFile("data/tasks.paed");
-                break;
-            case 2:
-                readTasksFile("data/tasksExtraSmall.paed");
-                break;
-            case 3:
-                readTasksFile("data/tasksSmall.paed");
-                break;
+    //function to read any file and storage the information into an array
+    public void readInternsFile(String filePath) {
+        try {
+            File file = new File(filePath);
+            Scanner scanner = new Scanner(file);
+
+            // Read the number of tasks (first line)
+            if (scanner.hasNextLine()) {
+                nInterns = Integer.parseInt(scanner.nextLine().trim());
+                interns = new Intern[nInterns]; // Initialize the array with the given size
+            }
+
+            int index = 0;
+
+            while (scanner.hasNextLine() && index < nInterns) {
+                String line = scanner.nextLine();
+                String[] fields = line.split(";");
+
+                if (fields.length == 4) {
+                    String name = fields[0];
+                    String subject = fields[1];
+                    float average = Float.parseFloat(fields[2]);
+                    boolean junior = Boolean.parseBoolean(fields[3]);
+
+                    interns[index] = new Intern(name, subject, average, junior);
+                    index++;
+                }
+            }
+            scanner.close();
+
+        } catch (IOException e) {
+            System.err.println("Error reading file: " + e.getMessage());
+        } catch (NumberFormatException e) {
+            System.err.println("Error parsing task count or task fields: " + e.getMessage());
         }
     }
 
@@ -93,13 +113,13 @@ public class Functions {
     public void getInternsFile(int option) {
         switch (option) {
             case 1:
-                readTasksFile("data/interns.paed");
+                readInternsFile("data/interns.paed");
                 break;
             case 2:
-                readTasksFile("data/internsExtraSmall.paed");
+                readInternsFile("data/internsExtraSmall.paed");
                 break;
             case 3:
-                readTasksFile("data/internsSmall.paed");
+                readInternsFile("data/internsSmall.paed");
                 break;
         }
     }
@@ -143,9 +163,17 @@ public class Functions {
 
         System.out.println(getnTasks() + " in the array");
 
-        System.out.println("\nSelect the problem to solve: ");
-        System.out.println("\t1. Task Organization");
-        System.out.println("\t2. Equitable distribution");
+        System.out.println("\nSelect type of interns file: ");
+        System.out.println("\t1. interns");
+        System.out.println("\t2. internsExtraSmall");
+        System.out.println("\t3. internsSmall");
+
+        int internsFile = menu.inputScanner(1, 3, "file");
+        getInternsFile(internsFile);
+
+        System.out.println("\nSelect the algorithm to solve the problem: ");
+        System.out.println("\t1. Task Organization by Greedy");
+        System.out.println("\t2. Task Organization by Branch and Bound");
 
         int option = menu.inputScanner(1, 2 , "problem");
 
@@ -155,26 +183,28 @@ public class Functions {
         int numTasks = scanner.nextInt(); // Number of tasks to sort
         System.out.println("You choose " + numTasks + " tasks.");
 
-        long startTime = 0;
-        long endTime = 0;
-        long totalDuration = 0;
+        long startTime;
+        long endTime;
+        long totalDuration;
 
         if (option == 1) {
             startTime = System.currentTimeMillis();
-            algorithms.insertionSort(tasks, numTasks);
+            algorithms.greedyTO();
+            //algorithms.insertionSort(tasks, numTasks);
             endTime = System.currentTimeMillis();
             totalDuration = (endTime - startTime);
 
-            System.out.println("Selection Sorting completed in " + totalDuration+ " ms");
+            System.out.println("Greedy completed in " + totalDuration+ " ms");
         }
         else if (option == 2) {
 
             startTime = System.nanoTime();
-            algorithms.selectionSort(tasks, numTasks);
+            algorithms.branchAndBound(tasks,interns, numTasks);
+            //algorithms.selectionSort(tasks, numTasks);
             endTime = System.nanoTime();
             totalDuration = (endTime - startTime)/1000000;
 
-            System.out.println("Selection Sorting completed in " + totalDuration+ " ms");
+            System.out.println("Branch and Bound completed in " + totalDuration+ " ms");
         }
 
         // Ask if user wants to see the sorted tasks
@@ -193,7 +223,6 @@ public class Functions {
         Menu menu = new Menu();
         Algorithms algorithms = new Algorithms();
 
-
         System.out.println("\nSelect type of data file: ");
         System.out.println("\t1. Random");
         System.out.println("\t2. Random Small");
@@ -206,29 +235,36 @@ public class Functions {
         int numTasks = scanner.nextInt(); // The value is assigned to the nTasks
         System.out.println("You chose to sort " + numTasks + " tasks.");
 
-        System.out.println("\nSelect type of sorting algorithm: ");
-        System.out.println("\t1. Quick Sort");
-        System.out.println("\t2. Merge Sort");
-        int option = menu.inputScanner(1, 2, "sorting algorithm");
+        System.out.println("\nSelect the algorithm to solve the problem: ");
+        System.out.println("\t1. Equitable Distribution by Greedy");
+        System.out.println("\t2. Equitable Distribution by Backtracking with Pruning");
+        System.out.println("\t3. Equitable Distribution by Brute Force");
 
-        // Create a subarray of the first numTasks elements
-        Task[] subArray = new Task[numTasks];
-        System.arraycopy(tasks, 0, subArray, 0, numTasks);
+        int option = menu.inputScanner(1, 3, "algorithm");
 
         if (option == 1) {
             long startTime = System.currentTimeMillis();
-            algorithms.quickSort(subArray, 0,subArray.length - 1);
+            algorithms.greedyEQ();
+            //algorithms.quickSort(subArray, 0,subArray.length - 1);
             long endTime = System.currentTimeMillis();
             long duration = endTime - startTime ;
-            System.out.println("\nQuick Sort completed in " + duration + " ms");
+            System.out.println("\nGreedy completed in " + duration + " ms");
 
         }
         else if (option == 2) {
             long startTime = System.currentTimeMillis();
-            algorithms.mergeSort(subArray);
+            algorithms.backtracking();
+            //algorithms.mergeSort(subArray);
             long endTime = System.currentTimeMillis();
             long duration = endTime - startTime ;
-            System.out.println("\nMerge Sort completed in " + duration + " ms");
+            System.out.println("\nBacktracking completed in " + duration + " ms");
+
+        } else if (option == 3) {
+            long startTime = System.currentTimeMillis();
+            algorithms.bruteForce();
+            long endTime = System.currentTimeMillis();
+            long duration = endTime - startTime ;
+            System.out.println("\nBrute Force completed in " + duration + " ms");
 
         }
 
@@ -242,10 +278,5 @@ public class Functions {
         deleteData();
 
     }
-
-    public void sortingPerformanceAnalysis(){
-
-    }
-
 
 }

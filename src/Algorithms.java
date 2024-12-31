@@ -8,7 +8,7 @@ public class Algorithms {
 
     }
 
-    public void branchAndBound() {
+    public void branchAndBound(Task[] tasks, Intern[] interns, int numTasks) {
 
 
     }
