@@ -1,6 +1,5 @@
 import java.io.File;
 import java.io.IOException;
-import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Scanner;
@@ -20,7 +19,7 @@ public class Functions {
     }
 
     //function to read any file and storage the information into an array
-    public void scanText(String filePath) {
+    public void readTasksFile(String filePath) {
         try {
             File file = new File(filePath);
             Scanner scanner = new Scanner(file);
@@ -34,7 +33,6 @@ public class Functions {
             // Read each task line
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d-M-yy");
             int index = 0;
-
 
             while (scanner.hasNextLine() && index < nTasks) {
                 String line = scanner.nextLine();
@@ -65,26 +63,45 @@ public class Functions {
     public void getFile(int option) {
         switch (option) {
             case 1:
-                scanText("data/random.paed");
+                readTasksFile("data/tasks.paed");
                 break;
             case 2:
-                scanText("data/randomSmall.paed");
+                readTasksFile("data/tasksExtraSmall.paed");
                 break;
             case 3:
-                scanText("data/ascending.paed");
-                System.out.println("you chose Ascending file");
-                break;
-            case 4:
-                scanText("data/ascendingSmall.paed");
-                break;
-            case 5:
-                scanText("data/descending.paed");
-                break;
-            case 6:
-                scanText("data/descendingSmall.paed");
+                readTasksFile("data/tasksSmall.paed");
                 break;
         }
+    }
 
+    //function to set the list with the selected file by the user
+    public void getTasksFile(int option) {
+        switch (option) {
+            case 1:
+                readTasksFile("data/tasks.paed");
+                break;
+            case 2:
+                readTasksFile("data/tasksExtraSmall.paed");
+                break;
+            case 3:
+                readTasksFile("data/tasksSmall.paed");
+                break;
+        }
+    }
+
+    //function to set the list with the selected file by the user
+    public void getInternsFile(int option) {
+        switch (option) {
+            case 1:
+                readTasksFile("data/interns.paed");
+                break;
+            case 2:
+                readTasksFile("data/internsExtraSmall.paed");
+                break;
+            case 3:
+                readTasksFile("data/internsSmall.paed");
+                break;
+        }
     }
 
     // Function to delete the current array
@@ -112,34 +129,31 @@ public class Functions {
         }
     }
 
-    public void sortingByName() {
+    public void taskOrganization() {
         Algorithms algorithms = new Algorithms();
         Menu menu = new Menu();
 
         System.out.println("\nSelect type of data file: ");
-        System.out.println("\t1. Random");
-        System.out.println("\t2. Random Small");
-        System.out.println("\t3. Ascending");
-        System.out.println("\t4. Ascending small");
-        System.out.println("\t5. Descending");
-        System.out.println("\t6. Descending Small");
+        System.out.println("\t1. tasks");
+        System.out.println("\t2. tasksExtraSmall");
+        System.out.println("\t3. tasksSmall");
 
-        int file = menu.inputScanner(1, 6, "file");
-        getFile(file);
+        int file = menu.inputScanner(1, 3, "file");
+        getTasksFile(file);
 
         System.out.println(getnTasks() + " in the array");
 
-        System.out.println("\nSelect type of sorting algorithm: ");
-        System.out.println("\t1. Insertion Sort");
-        System.out.println("\t2. Selection Sort");
+        System.out.println("\nSelect the problem to solve: ");
+        System.out.println("\t1. Task Organization");
+        System.out.println("\t2. Equitable distribution");
 
-        int option = menu.inputScanner(1, 2, "sorting algorithm");
+        int option = menu.inputScanner(1, 2 , "problem");
 
-        //Asking the number of task to sort
+        //Asking the number of task
         Scanner scanner = new Scanner(System.in);
-        System.out.print("Enter the number of tasks to sort: ");
+        System.out.print("Enter the number of tasks: ");
         int numTasks = scanner.nextInt(); // Number of tasks to sort
-        System.out.println("You chose to sort " + numTasks + " tasks.");
+        System.out.println("You choose " + numTasks + " tasks.");
 
         long startTime = 0;
         long endTime = 0;
@@ -175,7 +189,7 @@ public class Functions {
         System.out.println(getnTasks() + " in the array");
     }
 
-    public void sortingByPriority(){
+    public void equitableDistribution(){
         Menu menu = new Menu();
         Algorithms algorithms = new Algorithms();
 
@@ -184,7 +198,7 @@ public class Functions {
         System.out.println("\t1. Random");
         System.out.println("\t2. Random Small");
         int file = menu.inputScanner(1, 5, "file");
-        getFile(file);
+        getInternsFile(file);
 
         //Asking the number of task to sort
         Scanner scanner = new Scanner(System.in);
