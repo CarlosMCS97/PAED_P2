@@ -55,7 +55,13 @@ public class BNBConfig implements Comparable<BNBConfig> {
                 float time = algorithm.timeCalculation(intern, task);
                 child.currentCost += time;
                 child.assigned[i] = true;
-                child.difficulty += intern.isJunior() ? task.getDifficulty() : 0;
+                if (intern.isJunior()) {
+                    child.difficulty += task.getDifficulty();
+                }
+                else {
+                    child.difficulty += 0;
+                }
+
                 child.internIndex++;
 
                 children.add(child);

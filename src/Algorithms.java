@@ -50,32 +50,36 @@ public class Algorithms {
 
     }
 
-    public void branchAndBound(Task[] tasks, Intern[] interns, int numTasks) {
+    public BNBConfig branchAndBound(Task[] tasks, Intern[] interns, int numTasks) {
         PriorityQueue<BNBConfig> queue = new PriorityQueue<>();
 
         BNBConfig first = new BNBConfig(numTasks);
+        first.bound = first.estimatedCost(tasks, interns, this); // Use estimatedCost for initial bound
         queue.offer(first);
         float minCost = Float.MAX_VALUE;
-        BNBConfig bestSolution = null;
+        BNBConfig bestSolution = first;
 
         while (!queue.isEmpty()) {
             BNBConfig current = queue.poll();
 
             if (current.internIndex < interns.length) {
-                List<BNBConfig> children = current.expand(tasks,interns,this);
+                List<BNBConfig> children = current.expand(tasks,interns,this); //Branch
 
                 for (BNBConfig child : children) {
-                    //updating the bound
+                    //updating the bound which is the estimate
                     child.bound = child.estimatedCost(tasks, interns, this);
 
-                    if (child.bound < minCost) {
-                        queue.offer(child);
-
-                        if (allTasksAssigned(child.assigned) && child.currentCost < minCost) {
+                    if (child.internIndex < interns.length) { //if child has more levels left
+                        if (child.bound < minCost) { //(BOUND) Prune if bound exceeds minCost
+                            queue.offer(child);
+                        }
+                    }
+                    else {
+                        //if no more levels, evaluate solution
+                        if (child.currentCost < minCost && allTasksAssigned(child.assigned)) {
                             minCost = child.currentCost;
                             bestSolution = child;
                         }
-
                     }
                 }
 
@@ -84,6 +88,7 @@ public class Algorithms {
         }
 
         System.out.println("Minimum Time: " + minCost);
+        return bestSolution;
     }
 
     private boolean allTasksAssigned(boolean[] assigned) {
