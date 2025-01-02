@@ -51,49 +51,50 @@ public class Algorithms {
     }
 
     public BNBConfig branchAndBound(Task[] tasks, Intern[] interns, int numTasks) {
-        PriorityQueue<BNBConfig> queue = new PriorityQueue<>();
+        PriorityQueue<BNBConfig> queue = new PriorityQueue<>(); // Min-priority queue
 
+        // Initial configuration
         BNBConfig first = new BNBConfig(numTasks);
-        first.bound = first.estimatedCost(tasks, interns, this); // Use estimatedCost for initial bound
+        first.bound = first.estimatedCost(tasks, interns, this);
         queue.offer(first);
+
         float minCost = Float.MAX_VALUE;
-        BNBConfig bestSolution = first;
+        BNBConfig bestSolution = null;
 
         while (!queue.isEmpty()) {
-            BNBConfig current = queue.poll();
+            BNBConfig current = queue.poll(); // Get the next configuration
 
-            if (current.internIndex < interns.length) {
-                List<BNBConfig> children = current.expand(tasks,interns,this); //Branch
+            // Expand current node
+            List<BNBConfig> children = current.expand(tasks, interns, this);
 
-                for (BNBConfig child : children) {
-                    //updating the bound which is the estimate
-                    child.bound = child.estimatedCost(tasks, interns, this);
+            for (BNBConfig child : children) {
+                // Update bound for child
+                child.bound = child.estimatedCost(tasks, interns, this);
 
-                    if (child.internIndex < interns.length) { //if child has more levels left
-                        if (child.bound < minCost) { //(BOUND) Prune if bound exceeds minCost
-                            queue.offer(child);
-                        }
-                    }
-                    else {
-                        //if no more levels, evaluate solution
-                        if (child.currentCost < minCost && allTasksAssigned(child.assigned)) {
+                // Prune branches where the estimate exceeds the current minimum
+                if (child.bound < minCost) {
+                    if (allTasksAssigned(child.assigned)) { // Check if all tasks are assigned
+                        if (child.currentCost < minCost) { // Update the best solution
                             minCost = child.currentCost;
                             bestSolution = child;
                         }
+                    } else {
+                        queue.offer(child); // Continue exploring
                     }
                 }
-
             }
-
         }
 
         System.out.println("Minimum Time: " + minCost);
-        return bestSolution;
+
+
+        return bestSolution; // Return the best configuration found
     }
 
+
     private boolean allTasksAssigned(boolean[] assigned) {
-        for (boolean task : assigned) {
-            if (!task) {
+        for (boolean taskAssigned : assigned) {
+            if (!taskAssigned) {
                 return false;
             }
         }

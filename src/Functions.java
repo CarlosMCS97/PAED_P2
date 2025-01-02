@@ -163,6 +163,7 @@ public class Functions {
         Algorithms algorithms = new Algorithms();
         Menu menu = new Menu();
 
+        //Select the tasks file
         System.out.println("\nSelect type of data file: ");
         System.out.println("\t1. tasks");
         System.out.println("\t2. tasksExtraSmall");
@@ -170,9 +171,9 @@ public class Functions {
 
         int file = menu.inputScanner(1, 3, "file");
         getTasksFile(file);
+        System.out.println(getnTasks() + " tasks in the array");
 
-        System.out.println(getnTasks() + " in the array");
-
+        //Select the interns file
         System.out.println("\nSelect type of interns file: ");
         System.out.println("\t1. interns");
         System.out.println("\t2. internsExtraSmall");
@@ -180,19 +181,24 @@ public class Functions {
 
         int internsFile = menu.inputScanner(1, 3, "file");
         getInternsFile(internsFile);
+        System.out.println(getnInterns() + " interns in the array");
 
-        System.out.println(getnInterns() + " in the array");
-
+        //Select the algorithm
         System.out.println("\nSelect the algorithm to solve the problem: ");
         System.out.println("\t1. Task Organization by Greedy");
         System.out.println("\t2. Task Organization by Branch and Bound");
 
-        int option = menu.inputScanner(1, 2 , "problem");
+        int option = menu.inputScanner(1, 2 , "algorithm");
 
         //Asking the number of task
         Scanner scanner = new Scanner(System.in);
         System.out.print("Enter the number of tasks: ");
-        int numTasks = scanner.nextInt(); // Number of tasks to sort
+        int numTasks = scanner.nextInt(); // Number of tasks
+        if (numTasks > getnTasks()) { // Validate input
+            System.out.println("Error: Number of tasks exceeds available tasks (" + getnTasks() + ").");
+            return; // Exit early
+        }
+
         System.out.println("You choose " + numTasks + " tasks.");
 
         long startTime;
@@ -210,13 +216,13 @@ public class Functions {
         }
         else if (option == 2) {
 
-            startTime = System.nanoTime();
-            algorithms.branchAndBound(tasks,interns, numTasks);
-            //algorithms.selectionSort(tasks, numTasks);
-            endTime = System.nanoTime();
-            totalDuration = (endTime - startTime)/1000000;
+            startTime = System.currentTimeMillis();
+            BNBConfig bestSolution = algorithms.branchAndBound(tasks,interns, numTasks);
+            endTime = System.currentTimeMillis();
+            totalDuration = (endTime - startTime);
 
             System.out.println("Branch and Bound completed in " + totalDuration+ " ms");
+
         }
 
         // Ask if user wants to see the sorted tasks
