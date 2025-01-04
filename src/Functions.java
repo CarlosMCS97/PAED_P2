@@ -207,8 +207,7 @@ public class Functions {
 
         if (option == 1) {
             startTime = System.currentTimeMillis();
-            algorithms.greedyTO();
-            //algorithms.insertionSort(tasks, numTasks);
+            algorithms.greedyTO(tasks, interns, numTasks);
             endTime = System.currentTimeMillis();
             totalDuration = (endTime - startTime);
 
