@@ -1,115 +1,109 @@
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class BNBConfig implements Comparable<BNBConfig> {
 
-    int internIndex;
-    boolean[] assigned;
-    float currentCost;
-    float bound;
-    int difficulty;
-    String building;
+    List<Integer> assignments;
+    double cost;
+    List<Task> remainingTasks;
 
-    public BNBConfig(int numTask) {
-        this.internIndex = 0;
-        this.assigned = new boolean[numTask];
-        this.currentCost = 0;
-        this.bound = 0;
-        this.difficulty = 0;
-        this.building = null;
 
+    public BNBConfig(List<Integer> assignments, double cost, List<Task> remainingTasks) {
+        this.assignments = new ArrayList<>(assignments);
+        this.cost = cost;
+        this.remainingTasks = remainingTasks;
     }
 
     public BNBConfig(BNBConfig that) {
-        this.internIndex = that.internIndex;
-        this.assigned = that.assigned.clone();
-        this.currentCost = that.currentCost;
-        this.bound = that.bound;
-        this.difficulty = that.difficulty;
-        this.building = that.building;
+        this.assignments = that.assignments;
+        this.cost = that.cost;
+        this.remainingTasks = that.remainingTasks;
     }
 
     @Override
-    public int compareTo(BNBConfig that) {
-        return Float.compare(this.bound, that.bound);
+    public int compareTo(BNBConfig other) {
+        return Double.compare(this.cost, other.cost);
+    }
+
+    public double getCost() {
+        return cost;
     }
 
     public List<BNBConfig> expand(Task[] tasks, Intern[] interns, Algorithms algorithm) {
         List<BNBConfig> children = new ArrayList<>();
 
-        // Explore all possible assignments for the next unassigned task
-        for (int i = 0; i < tasks.length; i++) {
-            if (!assigned[i]) { // Task not yet assigned
-                for (int j = 0; j < interns.length; j++) { // Try every intern
-                    Intern intern = interns[j];
-                    Task task = tasks[i];
+        // Get the next task to assign
+        Task task = remainingTasks.get(0);
+        List<Task> newRemainingTasks = remainingTasks.subList(1, remainingTasks.size());
 
-                    // Constraints
-                    if (intern.isJunior() && (difficulty + task.getDifficulty()) > 40) {
-                        continue; // Skip invalid assignment due to difficulty
+        for (int i = 0; i < interns.length; i++) {
+            Intern intern = interns[i];
+
+            // Check Building Constraint
+            boolean sameBuilding = true;
+            for (int j = 0; j < assignments.size(); j++) {
+                if (assignments.get(j) == i) { // Intern has been assigned other tasks
+                    Task assignedTask = tasks[j];
+                    if (!assignedTask.getBuilding().equals(task.getBuilding())) {
+                        sameBuilding = false;
+                        break;
                     }
-
-                    if (building != null && !building.equals(task.getBuilding())) {
-                        continue; // Skip invalid assignment due to building constraint
-                    }
-
-                    // Create a child configuration
-                    BNBConfig child = new BNBConfig(this);
-                    float time = algorithm.timeCalculation(intern, task);
-
-                    // Update child configuration
-                    child.currentCost += time;
-                    child.assigned[i] = true;
-
-                    if (intern.isJunior()) {
-                        child.difficulty += task.getDifficulty();
-                    }
-
-                    child.building = task.getBuilding();
-                    child.internIndex++; // Move to the next level
-
-                    children.add(child); // Add child to the list
                 }
             }
-        }
 
+            if (!sameBuilding) {
+                continue; // Skip this intern if they violate the building constraint
+            }
+
+            // Check Junior Difficulty Constraint
+            int totalDifficulty = 0;
+            for (int j = 0; j < assignments.size(); j++) {
+                if (assignments.get(j) == i) { // Tasks assigned to this intern
+                    totalDifficulty += tasks[j].getDifficulty();
+                }
+            }
+
+            if (intern.isJunior() && (totalDifficulty + task.getDifficulty() > 40)) {
+                continue; // Skip this intern if the difficulty exceeds the limit
+            }
+
+            // Calculate time and create a new configuration
+            double time = intern.calculateTime(task);
+            List<Integer> newAssignments = new ArrayList<>(assignments);
+            newAssignments.add(i);
+
+            // Add new configuration
+            children.add(new BNBConfig(newAssignments, cost + time, newRemainingTasks));
+        }
         return children;
     }
 
+    public double estimatedCost(Task[] tasks, Intern[] interns, Algorithms algorithm) {
+        double estimate = cost;
 
-    public float estimatedCost(Task[] tasks, Intern[] interns, Algorithms algorithm) {
-        float estimate = currentCost; // Start with current cost
+        // Convert Task[] to List<Task> for compatibility with isValid method
+        List<Task> taskList = Arrays.asList(tasks);
 
-        // Add remaining tasks based on the lowest feasible time
-        for (int i = 0; i < tasks.length; i++) {
-            if (!assigned[i]) { // Task not yet assigned
-                float minTime = Float.MAX_VALUE;
+        for (Task task : remainingTasks) {
+            double minTime = Double.MAX_VALUE;
 
-                for (int j = 0; j < interns.length; j++) { // Try every intern
-                    Intern intern = interns[j];
-                    Task task = tasks[i];
+            for (int i = 0; i < interns.length; i++) {
+                Intern intern = interns[i];
 
-                    // Check constraints
-                    if (intern.isJunior() && (difficulty + task.getDifficulty()) > 40) {
-                        continue; // Skip invalid assignment
-                    }
-
-                    if (building != null && !building.equals(task.getBuilding())) {
-                        continue; // Skip invalid assignment
-                    }
-
-                    // Calculate time required for this intern-task pair
-                    float time = algorithm.timeCalculation(intern, task);
-                    minTime = Math.min(minTime, time); // Find the fastest valid time
+                // Use isValid method, passing taskList instead of Task[]
+                if (algorithm.isValid(intern, task, assignments, taskList)) {
+                    double time = intern.calculateTime(task);
+                    minTime = Math.min(minTime, time); // Take the minimum valid time
                 }
-
-                // Add the lowest cost for this task
-                estimate += minTime;
             }
+
+            estimate += minTime; // Add the minimum time for this task
         }
 
-        return estimate; // Total estimate (current cost + remaining cost)
+        return estimate;
     }
+
 
 
 }

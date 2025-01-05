@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.PriorityQueue;
 
@@ -50,15 +52,14 @@ public class Algorithms {
 
     }
 
-    public BNBConfig branchAndBound(Task[] tasks, Intern[] interns, int numTasks) {
+    public List<Integer> branchAndBound(Task[] tasks, Intern[] interns) {
         PriorityQueue<BNBConfig> queue = new PriorityQueue<>(); // Min-priority queue
 
         // Initial configuration
-        BNBConfig first = new BNBConfig(numTasks);
-        first.bound = first.estimatedCost(tasks, interns, this);
+        BNBConfig first = new BNBConfig(new ArrayList<>(), 0, Arrays.asList(tasks));
         queue.offer(first);
 
-        float minCost = Float.MAX_VALUE;
+        double minCost = Double.MAX_VALUE;
         BNBConfig bestSolution = null;
 
         while (!queue.isEmpty()) {
@@ -68,14 +69,11 @@ public class Algorithms {
             List<BNBConfig> children = current.expand(tasks, interns, this);
 
             for (BNBConfig child : children) {
-                // Update bound for child
-                child.bound = child.estimatedCost(tasks, interns, this);
-
                 // Prune branches where the estimate exceeds the current minimum
-                if (child.bound < minCost) {
-                    if (allTasksAssigned(child.assigned)) { // Check if all tasks are assigned
-                        if (child.currentCost < minCost) { // Update the best solution
-                            minCost = child.currentCost;
+                if (child.estimatedCost(tasks, interns, this) < minCost) {
+                    if (child.remainingTasks.isEmpty()) { // Check if all tasks are assigned
+                        if (child.getCost() < minCost) { // Update the best solution
+                            minCost = child.getCost();
                             bestSolution = child;
                         }
                     } else {
@@ -85,18 +83,24 @@ public class Algorithms {
             }
         }
 
-        System.out.println("Minimum Time: " + minCost);
-
-
-        return bestSolution; // Return the best configuration found
+        return bestSolution != null ? bestSolution.assignments : null;
     }
 
+    public boolean isValid(Intern intern, Task task, List<Integer> assignments, List<Task> assignedTasks) {
+        int internIndex = assignments.size();
 
-    private boolean allTasksAssigned(boolean[] assigned) {
-        for (boolean taskAssigned : assigned) {
-            if (!taskAssigned) {
-                return false;
+        // Calculate total difficulty for the intern
+        int totalDifficulty = 0;
+        for (int i = 0; i < assignments.size(); i++) {
+            if (assignments.get(i) == internIndex) {
+                totalDifficulty += assignedTasks.get(i).getDifficulty();
+                if (!intern.getSubject().equals(task.getSubject())) return false;
             }
+        }
+
+        // Check junior intern difficulty constraint
+        if (intern.isJunior() && totalDifficulty + task.getDifficulty() > 40) {
+            return false;
         }
         return true;
     }

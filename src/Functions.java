@@ -2,6 +2,7 @@ import java.io.File;
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Scanner;
 
 public class Functions {
@@ -192,6 +193,7 @@ public class Functions {
 
         //Asking the number of task
         Scanner scanner = new Scanner(System.in);
+        /*
         System.out.print("Enter the number of tasks: ");
         int numTasks = scanner.nextInt(); // Number of tasks
         if (numTasks > getnTasks()) { // Validate input
@@ -200,6 +202,8 @@ public class Functions {
         }
 
         System.out.println("You choose " + numTasks + " tasks.");
+
+        */
 
         long startTime;
         long endTime;
@@ -217,16 +221,27 @@ public class Functions {
         else if (option == 2) {
 
             startTime = System.currentTimeMillis();
-            BNBConfig bestSolution = algorithms.branchAndBound(tasks,interns, numTasks);
+            List<Integer> bestSolution = algorithms.branchAndBound(tasks, interns);
             endTime = System.currentTimeMillis();
             totalDuration = (endTime - startTime);
 
             System.out.println("Branch and Bound completed in " + totalDuration+ " ms");
 
+            System.out.println("Best Solution:");
+            double bestTime = 0;
+            for (int i = 0; i < bestSolution.size(); i++) {
+                Intern assignedIntern = interns[bestSolution.get(i)];
+                Task assignedTask = tasks[i];
+                double time = assignedIntern.calculateTime(assignedTask);
+                bestTime += time;
+                System.out.println("Task " + (i + 1) + " -> Intern " + (bestSolution.get(i) + 1) + " (Time: " + time + " minutes)");
+            }
+            System.out.println("Total Time: " + bestTime + " minutes");
+
         }
 
         // Ask if user wants to see the sorted tasks
-        shortedInformation(numTasks);
+        shortedInformation(nTasks);
     }
 
     public void equitableDistribution(){

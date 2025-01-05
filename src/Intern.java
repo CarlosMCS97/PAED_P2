@@ -33,5 +33,31 @@ public class Intern {
         return String.format("%s;%s;%.1f;%b", getName(), getSubject(), getAverage(), isJunior());
     }
 
+    public double calculateSkillPoints(Task task) {
+        double skillPoints = average * 10;
+
+        if (average >= 9) {
+            skillPoints *= 1.5;
+        }
+        else if (average >= 7 ) {
+            skillPoints *= 1.2;
+        }
+
+        if (!junior) {
+            skillPoints += 10;
+        }
+
+        if (subject.equals(task.getSubject())) {
+            skillPoints += 20;
+        }
+
+        return skillPoints;
+    }
+
+    public double calculateTime(Task task) {
+        double skillPoints = calculateSkillPoints(task);
+        return (task.getTime() / skillPoints) * 80;
+    }
+
 
 }
